@@ -57,6 +57,23 @@
         </template>
     </div>
 
+    <!-- special -->
+    <div class="h-full px-4 lg:px-8 flex-1">
+        <div class="text-xl mb-2 mt-6">Can I Speak To Your Manager?</div>
+        <template x-for="special in specialHeads" :key="special.name">
+            <div class="pb-4">
+                <div x-text="`${special.name} (${special.data.length})`"></div>
+                <div class="flex flex-row flex-wrap">
+                    <template x-for="toolhead in special.data" :key="toolhead.fingerprint" >
+                        <a class="pr-2 pt-1" x-bind:href="`https://pool.pm/${toolhead.fingerprint}`" target="_blank">
+                            <img x-bind:src="`https://images.cnft.tools/ipfs/${toolhead.image}`" class="rounded-md h-24" />
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+
     <div class="flex flex-col text-center text-xs text-gray-500">
         <div><a href="https://twitter.com/T__o__m__b__o" target="_blank" class="hover:text-sky-500">Tombo</a></div>
     </div>
@@ -100,6 +117,10 @@
                 {name: 'Spade', data:[]},
             ],
 
+            specialHeads: [
+                {name: 'DystoDreads', data: []}
+            ],
+
             async fetchData() {
                 try {
                     this.isLoading = true;
@@ -124,6 +145,17 @@
                         this.pokerHeads.forEach((head, i) => {
                             if(headAttributes.indexOf(head.name) > -1) { 
                                 this.pokerHeads[i]['data'].push({
+                                    'fingerprint': toolhead['fingerprint'],
+                                    'tk256': toolhead['tk256'],
+                                    'image': toolhead['metadata']['image'].match(/\/\/(.*)/)[1]
+                                })
+                            }
+                        })
+
+                        // special
+                        this.specialHeads.forEach((head, i) => {
+                            if(headAttributes.indexOf(head.name) > -1) { 
+                                this.specialHeads[i]['data'].push({
                                     'fingerprint': toolhead['fingerprint'],
                                     'tk256': toolhead['tk256'],
                                     'image': toolhead['metadata']['image'].match(/\/\/(.*)/)[1]
