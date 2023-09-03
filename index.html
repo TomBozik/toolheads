@@ -40,6 +40,23 @@
         </template>
     </div>
 
+    <!-- poker -->
+    <div class="h-full px-4 lg:px-8 flex-1">
+        <div class="text-xl mb-2 mt-6">Poker Attributes</div>
+        <template x-for="poker in pokerHeads" :key="poker.name">
+            <div class="pb-4">
+                <div x-text="`${poker.name} (${poker.data.length})`"></div>
+                <div class="flex flex-row flex-wrap">
+                    <template x-for="toolhead in poker.data" :key="toolhead.fingerprint" >
+                        <a class="pr-2 pt-1" x-bind:href="`https://pool.pm/${toolhead.fingerprint}`" target="_blank">
+                            <img x-bind:src="`https://images.cnft.tools/ipfs/${toolhead.image}`" class="rounded-md h-24" />
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+
     <div class="flex flex-col text-center text-xs text-gray-500">
         <div><a href="https://twitter.com/T__o__m__b__o" target="_blank" class="hover:text-sky-500">Tombo</a></div>
     </div>
@@ -76,6 +93,13 @@
                 {name: 'Defender', data:[]},
             ],
 
+            pokerHeads: [
+                {name: 'Club', data:[]},
+                {name: 'Heart', data:[]},
+                {name: 'Diamond', data:[]},
+                {name: 'Spade', data:[]},
+            ],
+
             async fetchData() {
                 try {
                     this.isLoading = true;
@@ -94,6 +118,19 @@
                             'tk256': toolhead['tk256'],
                             'image': toolhead['metadata']['image'].match(/\/\/(.*)/)[1]
                         })
+
+                        // poker
+                        let headAttributes = toolhead['metadata']['attributes']['head'];
+                        this.pokerHeads.forEach((head, i) => {
+                            if(headAttributes.indexOf(head.name) > -1) { 
+                                this.pokerHeads[i]['data'].push({
+                                    'fingerprint': toolhead['fingerprint'],
+                                    'tk256': toolhead['tk256'],
+                                    'image': toolhead['metadata']['image'].match(/\/\/(.*)/)[1]
+                                })
+                            }
+                        })
+
                     });
                 } catch(e) {
                     this.isError = true;
