@@ -32,7 +32,7 @@
                 <div class="flex flex-row flex-wrap">
                     <template x-for="toolhead in role.data" :key="toolhead.fingerprint" >
                         <a class="pr-2 pt-1" x-bind:href="`https://pool.pm/${toolhead.fingerprint}`" target="_blank">
-                            <img x-bind:src="`https://${toolhead.fingerprint}.poolpm.nftcdn.io/image?size=256&tk=${toolhead.tk256}`" class="rounded-md h-24" />
+                            <img x-bind:src="`https://images.cnft.tools/ipfs/${toolhead.image}`" class="rounded-md h-24" />
                         </a>
                     </template>
                 </div>
@@ -92,8 +92,9 @@
                         this.toolheadRoles[roleIndex]['data'].push({
                             'fingerprint': toolhead['fingerprint'],
                             'tk256': toolhead['tk256'],
+                            'image': toolhead['metadata']['image'].match(/\/\/(.*)/)[1]
                         })
-                    }); 
+                    });
                 } catch(e) {
                     this.isError = true;
                     this.error = "Error :(";
