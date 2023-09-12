@@ -25,7 +25,9 @@
         </template> 
     </div>
 
+    <!-- toolheads -->
     <div class="h-full px-4 lg:px-8 flex-1">
+        <div class="text-xl mb-2 font-bold">Toolheads</div>
         <template x-for="role in toolheadRoles" :key="role.name">
             <div class="pb-4">
                 <div x-text="`${role.name} (${role.data.length})`"></div>
@@ -40,9 +42,21 @@
         </template>
     </div>
 
+    <!-- vaults -->
+    <div class="h-full px-4 lg:px-8 flex-1 pb-4">
+        <div class="text-xl mb-1 mt-8 font-bold">Vaults</div>
+        <div class="flex flex-row flex-wrap">
+            <template x-for="vault in vaults" :key="vault.fingerprint" >
+                <a class="pr-2 pt-1" x-bind:href="`https://pool.pm/${vault.fingerprint}`" target="_blank">
+                    <img x-bind:src="`https://images.cnft.tools/ipfs/${vault.image}`" class="rounded-md h-24" />
+                </a>
+            </template>
+        </div>
+    </div>
+
     <!-- poker -->
     <div class="h-full px-4 lg:px-8 flex-1">
-        <div class="text-xl mb-2 mt-6">Poker Attributes</div>
+        <div class="text-xl mb-2 mt-8 font-bold">Poker Attributes</div>
         <template x-for="poker in pokerHeads" :key="poker.name">
             <div class="pb-4">
                 <div x-text="`${poker.name} (${poker.data.length})`"></div>
@@ -59,7 +73,7 @@
 
     <!-- special -->
     <div class="h-full px-4 lg:px-8 flex-1">
-        <div class="text-xl mb-2 mt-6">Can I Speak To Your Manager?</div>
+        <div class="text-xl mb-2 mt-8 font-bold">Can I Speak To Your Manager?</div>
         <template x-for="special in specialHeads" :key="special.name">
             <div class="pb-4">
                 <div x-text="`${special.name} (${special.data.length})`"></div>
@@ -86,6 +100,7 @@
             title: 'Toolheads Collector',
             intro: 'Type the <code class="text-md text-sky-500">address or $handle</code> of your Cardano wallet:',
             policyId: '285c0b8e91ba323da4ca083c9db837e111dafbf3143ece4d03eba8f4',
+            vaultPolicyId: '717718c42fc4e9d1ad8b91df519b3d2182ab5b18e4ffd8bebef9aa82',
             walletSearch: localStorage.getItem("address") || '',
             isLoading: false,
             isError: false,
@@ -121,6 +136,8 @@
                 {name: 'DystoDreads', data: []}
             ],
 
+            vaults: [],
+
             async fetchData() {
                 try {
                     this.isLoading = true;
@@ -131,7 +148,9 @@
                     const response = await fetch(`https://pool.pm/wallet/${this.walletSearch}`);
                     const data = await response.json();
                     const walletToolheads = data.tokens.filter(token => { return token.policy === this.policyId });
-                    
+                    const walletVaults = data.tokens.filter(token => { return token.policy === this.vaultPolicyId });
+
+                    // toolheads
                     walletToolheads.forEach(toolhead => {
                         let roleIndex = this.toolheadRoles.findIndex(role => role.name === toolhead['metadata']['attributes']['role']);
                         this.toolheadRoles[roleIndex]['data'].push({
@@ -164,6 +183,16 @@
                         })
 
                     });
+
+                    // vaults
+                    walletVaults.forEach(vault => {
+                        this.vaults.push({
+                            'fingerprint': vault['fingerprint'],
+                            'tk256': vault['tk256'],
+                            'image': vault['metadata']['image'].match(/\/\/(.*)/)[1]
+                        });
+                    });
+
                 } catch(e) {
                     this.isError = true;
                     this.error = "Error :(";
