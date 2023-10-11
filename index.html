@@ -191,6 +191,20 @@
                         })
 
                     });
+                    this.toolheadRoles.forEach(function (role) {
+                        role.data.sort(function(a, b) {
+                            const rarityA = parseInt(a.rarity);
+                            const rarityB = parseInt(b.rarity);
+
+                            if (rarityA < rarityB) {
+                                return -1;
+                            } else if (rarityA > rarityB) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                    });
 
                     // vaults
                     walletVaults.forEach(vault => {
